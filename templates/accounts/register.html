@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <div class="text-center mb-4">
+        <div class="brand-icon mx-auto mb-3" style="width:52px;height:52px;font-size:1.4rem;border-radius:14px;">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <h2 style="font-family:var(--font-display);font-weight:700;">Create Your Account</h2>
+        <p class="text-muted small">Join SwiftLoan and get access to fast loans in minutes.</p>
+      </div>
+
+      <div class="sl-card">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="sl-form-label">Email Address</label>
+            {% render_field form.email class="sl-form-control" %}
+            {% if form.email.errors %}
+            <div class="form-error">{{ form.email.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="sl-form-label">Password</label>
+            {% render_field form.password1 class="sl-form-control" %}
+            {% if form.password1.errors %}
+            <div class="form-error">{{ form.password1.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label class="sl-form-label">Confirm Password</label>
+            {% render_field form.password2 class="sl-form-control" %}
+            {% if form.password2.errors %}
+            <div class="form-error">{{ form.password2.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-sl-green w-100 py-2">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+          </button>
+        </form>
+
+        <p class="text-center text-muted small mt-3 mb-0">
+          Already have an account? <a href="{% url 'accounts:login' %}" class="text-success fw-600">Sign in</a>
+        </p>
+      </div>
+
+      <p class="text-center text-muted small mt-3">
+        <i class="fas fa-lock me-1"></i> Your information is encrypted and secure.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

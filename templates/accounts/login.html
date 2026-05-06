@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+
+      <div class="text-center mb-4">
+        <div class="brand-icon mx-auto mb-3" style="width:52px;height:52px;font-size:1.4rem;border-radius:14px;">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <h2 style="font-family:var(--font-display);font-weight:700;">Welcome Back</h2>
+        <p class="text-muted small">Sign in to continue your loan journey.</p>
+      </div>
+
+      <div class="sl-card">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="sl-form-label">Email Address</label>
+            {% render_field form.username class="sl-form-control" %}
+            {% if form.username.errors %}
+            <div class="form-error">{{ form.username.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label class="sl-form-label">Password</label>
+            {% render_field form.password class="sl-form-control" %}
+            {% if form.password.errors %}
+            <div class="form-error">{{ form.password.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          {% if form.non_field_errors %}
+          <div class="alert sl-alert sl-alert-danger mb-3">
+            <i class="fas fa-exclamation-circle me-2"></i>{{ form.non_field_errors|join:", " }}
+          </div>
+          {% endif %}
+
+          <button type="submit" class="btn btn-sl-green w-100 py-2">
+            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+          </button>
+        </form>
+
+        <p class="text-center text-muted small mt-3 mb-0">
+          Don't have an account? <a href="{% url 'accounts:register' %}" class="text-success fw-600">Sign up free</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

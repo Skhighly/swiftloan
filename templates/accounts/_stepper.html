@@ -1,0 +1,16 @@
+{% load widget_tweaks %}
+<!-- STEPPER MACRO -->
+{% comment %}
+  Usage: {% include 'accounts/_stepper.html' with current_step=1 %}
+  Steps: 1=Profile, 2=ID Upload, 3=Verification, 4=Job Info
+{% endcomment %}
+<div class="sl-stepper">
+  {% for i, label in steps %}
+  <div class="step-item {% if i == current_step %}active{% elif i < current_step %}done{% endif %}">
+    <div class="step-circle">
+      {% if i < current_step %}<i class="fas fa-check" style="font-size:.7rem;"></i>{% else %}{{ i }}{% endif %}
+    </div>
+    <span class="step-label">{{ label }}</span>
+  </div>
+  {% endfor %}
+</div>

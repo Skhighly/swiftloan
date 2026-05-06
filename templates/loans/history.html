@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}My Loan History{% endblock %}
+
+{% block content %}
+<div class="sl-page-header">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h1><i class="fas fa-history me-2"></i>My Loan History</h1>
+      <p>All your loan applications in one place.</p>
+    </div>
+    <a href="{% url 'loans:apply' %}" class="btn btn-sl-gold">
+      <i class="fas fa-plus me-2"></i>New Application
+    </a>
+  </div>
+</div>
+
+<div class="container py-4">
+  {% if loans %}
+
+  <!-- SUMMARY STATS -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-file-alt"></i></div>
+        <div>
+          <div class="stat-value">{{ total_count }}</div>
+          <div class="stat-label">Total Applications</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-check-circle"></i></div>
+        <div>
+          <div class="stat-value">{{ active_count }}</div>
+          <div class="stat-label">Total Loans</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-money-bill-wave"></i></div>
+        <div>
+          <div class="stat-value">{{ disbursed_count }}</div>
+          <div class="stat-label">Disbursed</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-undo"></i></div>
+        <div>
+          <div class="stat-value">{{ repaid_count }}</div>
+          <div class="stat-label">Repaid</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESKTOP TABLE -->
+  <div class="sl-card p-0 overflow-hidden d-none d-md-block">
+    <table class="sl-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Amount</th>
+          <th>Deposit</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in loans %}
+        <tr>
+          <td class="fw-700" style="color:var(--sl-green);">#{{ loan.pk }}</td>
+          <td>
+            <span style="font-family:var(--font-display);font-weight:700;">KES {{ loan.requested_amount|floatformat:0 }}</span>
+          </td>
+          <td class="text-muted small">KES {{ loan.deposit_amount|floatformat:0 }}</td>
+          <td class="small text-muted">{{ loan.reason|truncatewords:8 }}</td>
+          <td>
+            <span class="sl-badge sl-badge-{{ loan.get_status_badge }}">
+              {{ loan.get_status_display }}
+            </span>
+          </td>
+          <td class="small text-muted">{{ loan.submitted_at|date:"d M Y" }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'loans:detail' loan.pk %}" class="btn btn-outline-success btn-sm" title="View Details">
+                <i class="fas fa-eye"></i>
+              </a>
+              {% if loan.status == 'approved' or loan.status == 'deposit_pending' %}
+              <a href="{% url 'payments:deposit' loan.pk %}" class="btn btn-warning btn-sm" title="Pay Deposit">
+                <i class="fas fa-mobile-alt"></i>
+              </a>
+              {% endif %}
+              {% if loan.status == 'disbursed' %}
+              <a href="{% url 'loans:repay' loan.pk %}" class="btn btn-success btn-sm" title="Repay">
+                <i class="fas fa-undo"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MOBILE CARDS -->
+  <div class="d-md-none">
+    {% for loan in loans %}
+    <div class="sl-card mb-3">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <span class="small text-muted">Loan #{{ loan.pk }}</span>
+          <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--sl-green);">
+            KES {{ loan.requested_amount|floatformat:0 }}
+          </div>
+        </div>
+        <span class="sl-badge sl-badge-{{ loan.get_status_badge }}">{{ loan.get_status_display }}</span>
+      </div>
+      <div class="row g-2 small text-muted mb-3">
+        <div class="col-6">Deposit: <strong>KES {{ loan.deposit_amount|floatformat:0 }}</strong></div>
+        <div class="col-6">Date: {{ loan.submitted_at|date:"d M Y" }}</div>
+        <div class="col-12">{{ loan.reason|truncatewords:12 }}</div>
+      </div>
+
+      <!-- Progress -->
+      <div class="sl-progress-wrap mb-3">
+        <div class="sl-progress-bar" style="width:{{ loan.get_progress_percentage }}%;"></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a href="{% url 'loans:detail' loan.pk %}" class="btn btn-outline-success btn-sm flex-grow-1">
+          <i class="fas fa-eye me-1"></i>Details
+        </a>
+        {% if loan.status == 'approved' or loan.status == 'deposit_pending' %}
+        <a href="{% url 'payments:deposit' loan.pk %}" class="btn btn-warning btn-sm flex-grow-1">
+          <i class="fas fa-mobile-alt me-1"></i>Pay Deposit
+        </a>
+        {% endif %}
+        {% if loan.status == 'disbursed' %}
+        <a href="{% url 'loans:repay' loan.pk %}" class="btn btn-success btn-sm flex-grow-1">
+          <i class="fas fa-undo me-1"></i>Repay
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="sl-card">
+    <div class="empty-state py-5">
+      <i class="fas fa-file-invoice-dollar fa-4x mb-3" style="color:var(--sl-border);"></i>
+      <h4 style="color:var(--sl-muted);">No Loan Applications Yet</h4>
+      <p class="text-muted">You haven't applied for any loans. Get started now!</p>
+      <a href="{% url 'loans:apply' %}" class="btn btn-sl-green mt-2 px-4">
+        <i class="fas fa-plus me-2"></i>Apply for Your First Loan
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

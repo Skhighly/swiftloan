@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="sl-page-header">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div>
+      <h1>Welcome, {{ user.full_name|default:user.email }} 👋</h1>
+      <p>Here's your loan overview.</p>
+    </div>
+    {% if not active_loan %}
+    <a href="{% url 'loans:apply' %}" class="btn btn-sl-gold">
+      <i class="fas fa-plus me-2"></i>Apply for Loan
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container py-4">
+
+  <!-- STATS ROW -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-file-invoice-dollar"></i></div>
+        <div>
+          <div class="stat-value">{{ loans.count }}</div>
+          <div class="stat-label">Total Applications</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-hourglass-half"></i></div>
+        <div>
+          <div class="stat-value">
+            {% with active=loans|length %}
+            {{ loans.count }}
+            {% endwith %}
+          </div>
+          <div class="stat-label">Active Loan</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-bell"></i></div>
+        <div>
+          <div class="stat-value">{{ unread_notifications_count }}</div>
+          <div class="stat-label">Unread Notifications</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-user-shield"></i></div>
+        <div>
+          <div class="stat-value">
+            {% if user.profile.is_verified %}
+            <span style="color:var(--sl-green);font-size:1.2rem;"><i class="fas fa-check-circle"></i></span>
+            {% else %}
+            <span style="color:#d97706;font-size:1.2rem;"><i class="fas fa-clock"></i></span>
+            {% endif %}
+          </div>
+          <div class="stat-label">Profile Status</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- ACTIVE LOAN CARD -->
+    <div class="col-lg-7">
+      {% if active_loan %}
+      <div class="sl-card">
+        <div class="sl-card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-file-alt me-2 text-success"></i>Active Loan — #{{ active_loan.pk }}
+          </h5>
+          <span class="sl-badge sl-badge-{{ active_loan.get_status_badge }}">
+            {{ active_loan.get_status_display }}
+          </span>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <span class="small text-muted d-block">Loan Amount</span>
+            <strong style="font-family:var(--font-display);font-size:1.3rem;color:var(--sl-green);">
+              KES {{ active_loan.requested_amount|floatformat:0 }}
+            </strong>
+          </div>
+          <div class="col-6">
+            <span class="small text-muted d-block">Deposit Required</span>
+            <strong style="font-family:var(--font-display);font-size:1.3rem;color:var(--sl-gold-dark);">
+              KES {{ active_loan.deposit_amount|floatformat:0 }}
+            </strong>
+          </div>
+          <div class="col-6">
+            <span class="small text-muted d-block">Submitted</span>
+            <span class="small fw-600">{{ active_loan.submitted_at|date:"d M Y, H:i" }}</span>
+          </div>
+          <div class="col-6">
+            <span class="small text-muted d-block">Approved</span>
+            <span class="small fw-600">
+              {% if active_loan.approved_at %}{{ active_loan.approved_at|date:"d M Y, H:i" }}{% else %}Pending{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between small mb-1">
+            <span class="text-muted">Progress</span>
+            <span class="fw-600">{{ active_loan.get_progress_percentage }}%</span>
+          </div>
+          <div class="sl-progress-wrap">
+            <div class="sl-progress-bar" style="width:{{ active_loan.get_progress_percentage }}%;"></div>
+          </div>
+        </div>
+
+        <!-- STATUS MESSAGE -->
+        {% if active_loan.status == 'under_review' %}
+        <div class="p-3 rounded-2 mb-3" style="background:#fef3c7;border:1px solid #fde68a;">
+          <i class="fas fa-clock text-warning me-2"></i>
+          <strong>Under Review</strong> — Your application is being processed.
+          {% if active_loan.submitted_at %}
+          Auto-approval in <strong id="approval-countdown"
+            data-seconds="{{ active_loan.submitted_at|timesince }}"
+            >5:00</strong>
+          {% endif %}
+        </div>
+        {% elif active_loan.status == 'approved' or active_loan.status == 'deposit_pending' %}
+        <div class="p-3 rounded-2 mb-3" style="background:#d1fae5;border:1px solid #6ee7b7;">
+          <i class="fas fa-check-circle text-success me-2"></i>
+          <strong>Approved!</strong> Pay your deposit to unlock your loan funds.
+        </div>
+        <a href="{% url 'payments:deposit' active_loan.pk %}" class="btn btn-sl-gold w-100">
+          <i class="fas fa-mobile-alt me-2"></i>Pay KES {{ active_loan.deposit_amount|floatformat:0 }} Deposit via M-Pesa
+        </a>
+        {% elif active_loan.status == 'deposit_paid' %}
+        <div class="p-3 rounded-2 mb-3" style="background:#dbeafe;border:1px solid #93c5fd;">
+          <i class="fas fa-spinner fa-spin text-primary me-2"></i>
+          <strong>Deposit Confirmed!</strong> Our team is processing your disbursement.
+        </div>
+        {% elif active_loan.status == 'disbursed' %}
+        <div class="p-3 rounded-2 mb-3" style="background:#d1fae5;border:1px solid #6ee7b7;">
+          <i class="fas fa-money-bill-wave text-success me-2"></i>
+          <strong>Disbursed!</strong> KES {{ active_loan.requested_amount|floatformat:0 }} sent to your M-Pesa.
+        </div>
+        <a href="{% url 'loans:repay' active_loan.pk %}" class="btn btn-sl-green w-100">
+          <i class="fas fa-undo me-2"></i>Repay Loan
+        </a>
+        {% endif %}
+
+        <div class="mt-3 text-end">
+          <a href="{% url 'loans:detail' active_loan.pk %}" class="small text-success fw-600">
+            View Full Details <i class="fas fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+      {% else %}
+      <div class="sl-card text-center py-5">
+        <div class="empty-state">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <h5>No Active Loan</h5>
+          <p class="text-muted small">Apply for your first loan in just a few clicks.</p>
+          {% if user.onboarding_step == 'complete' or user.onboarding_step == 'job_info' %}
+          <a href="{% url 'loans:apply' %}" class="btn btn-sl-green mt-2">
+            <i class="fas fa-plus me-2"></i>Apply Now
+          </a>
+          {% else %}
+          <a href="{{ user.get_onboarding_url }}" class="btn btn-sl-green mt-2">
+            <i class="fas fa-arrow-right me-2"></i>Complete Your Profile First
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT: RECENT NOTIFICATIONS + QUICK LINKS -->
+    <div class="col-lg-5">
+      <!-- Notifications preview -->
+      <div class="sl-card mb-3">
+        <div class="sl-card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-bell me-2 text-warning"></i>Recent Notifications
+          </h6>
+          <a href="{% url 'notifications:list' %}" class="small text-success">View All</a>
+        </div>
+        {% if recent_notifications %}
+          {% for notif in recent_notifications %}
+          <div class="notif-item {% if not notif.is_read %}unread{% endif %} p-2 mb-2">
+            <div class="notif-icon-wrap" style="width:34px;height:34px;min-width:34px;border-radius:8px;">
+              <i class="{{ notif.get_icon }}"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small fw-600">{{ notif.title }}</div>
+              <div class="small text-muted">{{ notif.message|truncatewords:12 }}</div>
+              <div style="font-size:.7rem;color:var(--sl-muted);">{{ notif.created_at|timesince }} ago</div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="small text-muted text-center py-3 mb-0">No notifications yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- Quick links -->
+      <div class="sl-card">
+        <h6 class="fw-700 mb-3" style="font-family:var(--font-display);">Quick Actions</h6>
+        <div class="d-grid gap-2">
+          <a href="{% url 'loans:history' %}" class="btn btn-outline-success btn-sm text-start">
+            <i class="fas fa-history me-2"></i>View Loan History
+          </a>
+          <a href="{% url 'notifications:list' %}" class="btn btn-outline-secondary btn-sm text-start">
+            <i class="fas fa-bell me-2"></i>All Notifications
+            {% if unread_notifications_count > 0 %}
+            <span class="badge bg-warning text-dark ms-1">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

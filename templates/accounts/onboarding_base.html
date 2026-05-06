@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="sl-page-header">
+  <div class="container">
+    <h1>{% block step_title %}Complete Your Profile{% endblock %}</h1>
+    <p>{% block step_subtitle %}Step {{ step }} of 4 — Complete all steps to apply for a loan.{% endblock %}</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <!-- STEPPER -->
+  <div class="sl-stepper mb-4">
+    {% with steps_list="1,2,3,4" %}
+    <div class="step-item {% if step == 1 %}active{% elif step > 1 %}done{% endif %}">
+      <div class="step-circle">{% if step > 1 %}<i class="fas fa-check" style="font-size:.7rem;"></i>{% else %}1{% endif %}</div>
+      <span class="step-label">Profile</span>
+    </div>
+    <div class="step-item {% if step == 2 %}active{% elif step > 2 %}done{% endif %}">
+      <div class="step-circle">{% if step > 2 %}<i class="fas fa-check" style="font-size:.7rem;"></i>{% else %}2{% endif %}</div>
+      <span class="step-label">ID Upload</span>
+    </div>
+    <div class="step-item {% if step == 3 %}active{% elif step > 3 %}done{% endif %}">
+      <div class="step-circle">{% if step > 3 %}<i class="fas fa-check" style="font-size:.7rem;"></i>{% else %}3{% endif %}</div>
+      <span class="step-label">Verification</span>
+    </div>
+    <div class="step-item {% if step == 4 %}active{% endif %}">
+      <div class="step-circle">4</div>
+      <span class="step-label">Employment</span>
+    </div>
+    {% endwith %}
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="sl-card">
+        {% block form_content %}{% endblock %}
+      </div>
+    </div>
+    <!-- TIP CARD -->
+    <div class="col-md-4 col-lg-3">
+      <div class="sl-card" style="background:var(--sl-green-pale);border-color:var(--sl-green);">
+        <div class="d-flex gap-2 align-items-start">
+          <i class="fas fa-lightbulb mt-1" style="color:var(--sl-gold);"></i>
+          <div>
+            <strong class="small" style="color:var(--sl-green);">Why we ask this</strong>
+            <p class="small text-muted mt-1 mb-0">{% block tip_text %}This information helps us verify your identity and determine the best loan amount for you.{% endblock %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

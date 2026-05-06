@@ -1,0 +1,75 @@
+{% extends 'accounts/onboarding_base.html' %}
+{% load widget_tweaks %}
+
+{% block step_title %}Upload Your National ID{% endblock %}
+{% block tip_text %}We need photos of both sides of your National ID to verify your identity. Files must be JPG, PNG, or PDF under 5MB each.{% endblock %}
+
+{% block form_content %}
+<div class="sl-card-header">
+  <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+    <i class="fas fa-id-card me-2 text-success"></i>National ID Upload
+  </h5>
+</div>
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <!-- ID FRONT -->
+  <div class="mb-4">
+    <label class="sl-form-label">ID Front (National ID — Front Side) <span class="text-danger">*</span></label>
+    <div class="id-upload-box" id="front-box">
+      {% render_field form.id_front style="display:none;" id="id_front" %}
+      <img class="upload-preview mb-2" src="" alt="" style="display:none;max-height:120px;border-radius:8px;object-fit:cover;"/>
+      <div class="upload-label">
+        <i class="fas fa-cloud-upload-alt fa-2x mb-2" style="color:var(--sl-green);"></i><br>
+        <span class="fw-600 small">Click or drag to upload front of ID</span><br>
+        <span class="text-muted" style="font-size:.75rem;">JPG, PNG, PDF · Max 5MB</span>
+      </div>
+    </div>
+    {% if form.id_front.errors %}<div class="form-error mt-1">{{ form.id_front.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <!-- ID BACK -->
+  <div class="mb-4">
+    <label class="sl-form-label">ID Back (National ID — Back Side) <span class="text-danger">*</span></label>
+    <div class="id-upload-box" id="back-box">
+      {% render_field form.id_back style="display:none;" id="id_back" %}
+      <img class="upload-preview mb-2" src="" alt="" style="display:none;max-height:120px;border-radius:8px;object-fit:cover;"/>
+      <div class="upload-label">
+        <i class="fas fa-cloud-upload-alt fa-2x mb-2" style="color:var(--sl-green);"></i><br>
+        <span class="fw-600 small">Click or drag to upload back of ID</span><br>
+        <span class="text-muted" style="font-size:.75rem;">JPG, PNG, PDF · Max 5MB</span>
+      </div>
+    </div>
+    {% if form.id_back.errors %}<div class="form-error mt-1">{{ form.id_back.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-sl-green w-100 py-2">
+    Next: Verify M-Pesa & KRA <i class="fas fa-arrow-right ms-2"></i>
+  </button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Wire upload boxes manually since IDs differ from class selector
+['front-box', 'back-box'].forEach(function(boxId) {
+  var box = document.getElementById(boxId);
+  if (!box) return;
+  var input = box.querySelector('input[type=file]');
+  var preview = box.querySelector('.upload-preview');
+  var label = box.querySelector('.upload-label');
+  box.addEventListener('click', function(e) { if (e.target !== input) input.click(); });
+  input.addEventListener('change', function() {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        label.querySelector('span').textContent = input.files[0].name;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
+});
+</script>
+{% endblock %}

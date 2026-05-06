@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% block title %}Loan #{{ loan.pk }} Details{% endblock %}
+
+{% block content %}
+<div class="sl-page-header">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h1><i class="fas fa-file-alt me-2"></i>Loan #{{ loan.pk }}</h1>
+      <p>Submitted {{ loan.submitted_at|date:"d M Y" }} &middot; {{ loan.get_status_display }}</p>
+    </div>
+    <span class="sl-badge sl-badge-{{ loan.get_status_badge }} fs-6 px-3 py-2">
+      {{ loan.get_status_display }}
+    </span>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- LEFT COLUMN: Progress + Actions + Timeline -->
+    <div class="col-lg-7">
+
+      <!-- Progress Bar -->
+      <div class="sl-card mb-4">
+        <div class="d-flex justify-content-between small mb-2">
+          <span class="fw-600 text-muted">Application Progress</span>
+          <span class="fw-700" style="color:var(--sl-green);">{{ loan.get_progress_percentage }}%</span>
+        </div>
+        <div class="sl-progress-wrap mb-3">
+          <div class="sl-progress-bar" style="width:{{ loan.get_progress_percentage }}%;"></div>
+        </div>
+        <div class="d-flex justify-content-between" style="font-size:.72rem;color:var(--sl-muted);">
+          <span>Submitted</span>
+          <span>Under Review</span>
+          <span>Approved</span>
+          <span>Deposit</span>
+          <span>Disbursed</span>
+        </div>
+      </div>
+
+      <!-- Status Action Cards -->
+      {% if loan.status == 'under_review' %}
+      <div class="sl-card mb-4" style="border-color:#fde68a;background:#fffbeb;">
+        <div class="d-flex gap-3 align-items-center">
+          <i class="fas fa-hourglass-half fa-2x" style="color:var(--sl-gold);"></i>
+          <div>
+            <strong>Your application is being reviewed</strong>
+            <p class="small text-muted mb-0">
+              Auto-approval in
+              <strong
+                id="approval-countdown"
+                data-submitted="{{ loan.submitted_at|date:'U' }}"
+              >5:00</strong>
+              &mdash; or refresh this page after 5 minutes.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {% elif loan.status == 'approved' or loan.status == 'deposit_pending' %}
+      <div class="sl-card mb-4" style="border-color:#6ee7b7;background:#f0fdf4;">
+        <div class="d-flex gap-3 align-items-start mb-3">
+          <i class="fas fa-check-circle fa-2x text-success"></i>
+          <div>
+            <strong class="text-success">Loan Approved!</strong>
+            <p class="small text-muted mb-0">
+              Pay the refundable deposit of
+              <strong>KES {{ loan.deposit_amount|floatformat:0 }}</strong>
+              to receive your KES {{ loan.requested_amount|floatformat:0 }}.
+            </p>
+          </div>
+        </div>
+        <a href="{% url 'payments:deposit' loan.pk %}" class="btn btn-sl-gold w-100 py-2">
+          <i class="fas fa-mobile-alt me-2"></i>Pay KES {{ loan.deposit_amount|floatformat:0 }} Deposit via M-Pesa
+        </a>
+      </div>
+
+      {% elif loan.status == 'deposit_paid' %}
+      <div class="sl-card mb-4" style="border-color:#93c5fd;background:#eff6ff;">
+        <div class="d-flex gap-3 align-items-center">
+          <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+          <div>
+            <strong class="text-primary">Deposit Confirmed!</strong>
+            <p class="small text-muted mb-0">
+              Our team has received your deposit and is processing your disbursement.
+              Funds will be sent to your M-Pesa within 24 hours.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {% elif loan.status == 'disbursed' %}
+      <div class="sl-card mb-4" style="border-color:#6ee7b7;background:#f0fdf4;">
+        <div class="d-flex gap-3 align-items-start mb-3">
+          <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+          <div>
+            <strong class="text-success">Loan Disbursed!</strong>
+            <p class="small text-muted mb-0">
+              KES {{ loan.requested_amount|floatformat:0 }} has been sent to your M-Pesa.
+              Repay within the agreed term to get your deposit refunded.
+            </p>
+          </div>
+        </div>
+        <a href="{% url 'loans:repay' loan.pk %}" class="btn btn-sl-green w-100 py-2">
+          <i class="fas fa-undo me-2"></i>Repay This Loan
+        </a>
+      </div>
+
+      {% elif loan.status == 'repaid' %}
+      <div class="sl-card mb-4" style="border-color:#a7f3d0;background:#ecfdf5;">
+        <div class="d-flex gap-3 align-items-center">
+          <i class="fas fa-trophy fa-2x" style="color:var(--sl-gold);"></i>
+          <div>
+            <strong>Loan Fully Repaid!</strong>
+            <p class="small text-muted mb-0">
+              Well done! Your deposit of KES {{ loan.deposit_amount|floatformat:0 }}
+              will be refunded to your M-Pesa.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {% elif loan.status == 'rejected' %}
+      <div class="sl-card mb-4" style="border-color:#fca5a5;background:#fef2f2;">
+        <div class="d-flex gap-3 align-items-center">
+          <i class="fas fa-times-circle fa-2x text-danger"></i>
+          <div>
+            <strong class="text-danger">Application Rejected</strong>
+            {% if loan.rejection_reason %}
+            <p class="small text-muted mb-0">Reason: {{ loan.rejection_reason }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Timeline -->
+      <div class="sl-card">
+        <div class="sl-card-header">
+          <h6 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-stream me-2 text-success"></i>Application Timeline
+          </h6>
+        </div>
+        <div class="loan-timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong class="small">Application Submitted</strong>
+            <div class="small text-muted">{{ loan.submitted_at|date:"d M Y, H:i" }}</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot {% if loan.status != 'pending' %}filled{% endif %}">
+              {% if loan.status != 'pending' %}<i class="fas fa-check"></i>{% endif %}
+            </div>
+            <strong class="small {% if loan.status == 'pending' %}text-muted{% endif %}">Under Review</strong>
+            {% if loan.reviewed_at %}
+            <div class="small text-muted">{{ loan.reviewed_at|date:"d M Y, H:i" }}</div>
+            {% endif %}
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot {% if loan.approved_at %}filled{% endif %}">
+              {% if loan.approved_at %}<i class="fas fa-check"></i>{% endif %}
+            </div>
+            <strong class="small {% if not loan.approved_at %}text-muted{% endif %}">Approved</strong>
+            {% if loan.approved_at %}
+            <div class="small text-muted">{{ loan.approved_at|date:"d M Y, H:i" }}</div>
+            {% endif %}
+          </div>
+          <div class="timeline-item">
+            {% with paid=loan.status %}
+            <div class="timeline-dot {% if paid == 'deposit_paid' or paid == 'disbursed' or paid == 'repaid' %}filled{% endif %}">
+              {% if paid == 'deposit_paid' or paid == 'disbursed' or paid == 'repaid' %}<i class="fas fa-check"></i>{% endif %}
+            </div>
+            {% endwith %}
+            <strong class="small text-muted">Deposit Paid</strong>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot {% if loan.disbursed_at %}filled{% endif %}">
+              {% if loan.disbursed_at %}<i class="fas fa-check"></i>{% endif %}
+            </div>
+            <strong class="small {% if not loan.disbursed_at %}text-muted{% endif %}">Disbursed</strong>
+            {% if loan.disbursed_at %}
+            <div class="small text-muted">{{ loan.disbursed_at|date:"d M Y, H:i" }}</div>
+            {% endif %}
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot {% if loan.repaid_at %}filled{% endif %}">
+              {% if loan.repaid_at %}<i class="fas fa-check"></i>{% endif %}
+            </div>
+            <strong class="small {% if not loan.repaid_at %}text-muted{% endif %}">Repaid</strong>
+            {% if loan.repaid_at %}
+            <div class="small text-muted">{{ loan.repaid_at|date:"d M Y, H:i" }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Summary + Payments -->
+    <div class="col-lg-5">
+
+      <!-- Loan Summary -->
+      <div class="sl-card mb-3">
+        <div class="sl-card-header">
+          <h6 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-receipt me-2 text-success"></i>Loan Summary
+          </h6>
+        </div>
+        <table class="w-100" style="border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--sl-border);">
+            <td class="py-2 small text-muted">Loan Amount</td>
+            <td class="py-2 small fw-700 text-end" style="color:var(--sl-green);">
+              KES {{ loan.requested_amount|floatformat:0 }}
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--sl-border);">
+            <td class="py-2 small text-muted">Qualified For</td>
+            <td class="py-2 small fw-700 text-end">KES {{ loan.qualified_amount|floatformat:0 }}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--sl-border);">
+            <td class="py-2 small text-muted">Deposit (10%)</td>
+            <td class="py-2 small fw-700 text-end" style="color:var(--sl-gold-dark);">
+              KES {{ loan.deposit_amount|floatformat:0 }}
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--sl-border);">
+            <td class="py-2 small text-muted">Status</td>
+            <td class="py-2 text-end">
+              <span class="sl-badge sl-badge-{{ loan.get_status_badge }}">
+                {{ loan.get_status_display }}
+              </span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--sl-border);">
+            <td class="py-2 small text-muted">Submitted</td>
+            <td class="py-2 small text-end">{{ loan.submitted_at|date:"d M Y" }}</td>
+          </tr>
+          {% if loan.repayment_reference %}
+          <tr>
+            <td class="py-2 small text-muted">Repayment Ref</td>
+            <td class="py-2 small fw-600 text-end">{{ loan.repayment_reference }}</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+
+      <!-- Reason -->
+      <div class="sl-card mb-3">
+        <h6 class="fw-700 mb-2" style="font-family:var(--font-display);">
+          <i class="fas fa-comment-alt me-2 text-muted"></i>Reason for Application
+        </h6>
+        <p class="small text-muted mb-0" style="line-height:1.6;">{{ loan.reason }}</p>
+      </div>
+
+      <!-- Payments — uses loan_payments from view context, never touches DB directly -->
+      {% if loan_payments %}
+      <div class="sl-card">
+        <h6 class="fw-700 mb-3" style="font-family:var(--font-display);">
+          <i class="fas fa-credit-card me-2 text-success"></i>Payments
+        </h6>
+        {% for payment in loan_payments %}
+        <div class="d-flex justify-content-between align-items-center py-2"
+             style="border-bottom:1px solid var(--sl-border);">
+          <div>
+            <div class="small fw-600">{{ payment.get_payment_type_display }}</div>
+            <div style="font-size:.72rem;color:var(--sl-muted);">
+              {{ payment.created_at|date:"d M Y, H:i" }}
+            </div>
+            {% if payment.mpesa_receipt_number %}
+            <div style="font-size:.72rem;color:var(--sl-muted);">
+              Ref: {{ payment.mpesa_receipt_number }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="text-end">
+            <div class="small fw-700">KES {{ payment.amount|floatformat:0 }}</div>
+            <span class="sl-badge
+              {% if payment.status == 'completed' %}sl-badge-success
+              {% elif payment.status == 'failed' %}sl-badge-danger
+              {% else %}sl-badge-warning{% endif %}"
+              style="font-size:.65rem;">
+              {{ payment.status }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="mt-3">
+        <a href="{% url 'loans:history' %}" class="btn btn-outline-secondary w-100 btn-sm">
+          <i class="fas fa-arrow-left me-2"></i>Back to Loan History
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Accurate countdown: calculates real remaining seconds from submitted_at Unix timestamp
+var el = document.getElementById('approval-countdown');
+if (el) {
+  var approvalSeconds = 5 * 60;
+  var submittedUnix   = parseInt(el.dataset.submitted || 0);
+  var nowUnix         = Math.floor(Date.now() / 1000);
+  var elapsed         = submittedUnix > 0 ? (nowUnix - submittedUnix) : 0;
+  var remaining       = Math.max(0, approvalSeconds - elapsed);
+
+  function tick() {
+    if (remaining <= 0) {
+      el.textContent = 'Processing...';
+      // Reload so the view's check_and_approve_pending() fires
+      setTimeout(function () { window.location.reload(); }, 1500);
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    remaining--;
+    setTimeout(tick, 1000);
+  }
+  tick();
+}
+</script>
+{% endblock %}

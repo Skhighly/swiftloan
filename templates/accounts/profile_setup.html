@@ -1,0 +1,33 @@
+{% extends 'accounts/onboarding_base.html' %}
+{% load widget_tweaks %}
+
+{% block step_title %}Tell Us About Yourself{% endblock %}
+{% block tip_text %}Your full legal name must match your National ID exactly. Your phone number will be used for account communications.{% endblock %}
+
+{% block form_content %}
+<div class="sl-card-header">
+  <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+    <i class="fas fa-user me-2 text-success"></i>Personal Information
+  </h5>
+</div>
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="sl-form-label">Full Legal Name <span class="text-danger">*</span></label>
+    {% render_field form.full_name class="sl-form-control" %}
+    {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <div class="mb-4">
+    <label class="sl-form-label">Phone Number <span class="text-danger">*</span></label>
+    {% render_field form.phone_number class="sl-form-control" %}
+    <span class="small text-muted">Format: 07XXXXXXXX or 2547XXXXXXXX</span>
+    {% if form.phone_number.errors %}<div class="form-error">{{ form.phone_number.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-sl-green w-100 py-2">
+    Next: Upload ID <i class="fas fa-arrow-right ms-2"></i>
+  </button>
+</form>
+{% endblock %}

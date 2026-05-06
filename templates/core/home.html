@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}Fast Loans in Kenya{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="sl-hero">
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p class="text-uppercase small mb-2" style="color:var(--sl-gold);letter-spacing:.1em;font-weight:700;">
+          <i class="fas fa-bolt me-1"></i> Instant Loans · Kenya
+        </p>
+        <h1 class="sl-hero-title mb-3">
+          Get Up to <span>KES 20,000</span><br>in Minutes
+        </h1>
+        <p class="sl-hero-subtitle mb-4">
+          SwiftLoan delivers fast, transparent, and hassle-free loans — applied online, paid via M-Pesa, disbursed the same day.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{% url 'accounts:register' %}" class="btn btn-sl-gold px-4 py-2">
+            <i class="fas fa-rocket me-2"></i>Apply Now — It's Free
+          </a>
+          <a href="{% url 'core:requirements' %}" class="btn sl-btn-outline px-4 py-2">
+            <i class="fas fa-list-check me-2"></i>See Requirements
+          </a>
+        </div>
+        <p class="mt-3 small" style="opacity:.6;">
+          <i class="fas fa-shield-alt me-1"></i> 100% secure · No hidden fees · Refundable deposit
+        </p>
+      </div>
+      <div class="col-lg-5 offset-lg-1">
+        <div class="sl-hero-card">
+          <p class="small mb-3" style="opacity:.7;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">
+            Loan Amounts Available
+          </p>
+          <div class="row g-2 mb-3">
+            {% for amount in loan_amounts %}
+            <div class="col-6">
+              <div class="d-flex justify-content-between align-items-center rounded-3 px-3 py-2"
+                   style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);">
+                <span style="font-family:var(--font-display);font-weight:700;font-size:1.05rem;">
+                  KES {{ amount|floatformat:0 }}
+                </span>
+                <span class="small" style="opacity:.7;">{{ deposit_pct }}% dep.</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-3 p-2 rounded-2" style="background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.3);">
+            <i class="fas fa-undo" style="color:var(--sl-gold);"></i>
+            <span class="small">Deposit is <strong style="color:var(--sl-gold);">100% refundable</strong> upon repayment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="py-5" style="background:var(--sl-white);">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="text-uppercase small" style="color:var(--sl-gold);font-weight:700;letter-spacing:.1em;">Simple Process</p>
+      <h2 class="sl-section-title mx-auto">How SwiftLoan Works</h2>
+      <div class="sl-divider mx-auto"></div>
+    </div>
+    <div class="row g-4">
+      {% for step in steps %}
+      <div class="col-md-4 col-lg-2-4">{% endfor %}
+      <div class="col-md-4 col-lg">
+        <div class="sl-feature text-center">
+          <div class="feature-icon mx-auto"><i class="fas fa-user-plus"></i></div>
+          <h6 class="fw-700 mb-1" style="font-family:var(--font-display);">1. Register</h6>
+          <p class="small text-muted mb-0">Create your account with just your email and password.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg">
+        <div class="sl-feature text-center">
+          <div class="feature-icon mx-auto"><i class="fas fa-id-card"></i></div>
+          <h6 class="fw-700 mb-1" style="font-family:var(--font-display);">2. Verify Identity</h6>
+          <p class="small text-muted mb-0">Upload your National ID and provide your KRA PIN & M-Pesa.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg">
+        <div class="sl-feature text-center">
+          <div class="feature-icon mx-auto"><i class="fas fa-file-invoice-dollar"></i></div>
+          <h6 class="fw-700 mb-1" style="font-family:var(--font-display);">3. Apply</h6>
+          <p class="small text-muted mb-0">Choose your loan amount and state your reason for borrowing.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg">
+        <div class="sl-feature text-center">
+          <div class="feature-icon mx-auto"><i class="fas fa-clock"></i></div>
+          <h6 class="fw-700 mb-1" style="font-family:var(--font-display);">4. Auto-Approved</h6>
+          <p class="small text-muted mb-0">Our system reviews and approves your application in 5 minutes.</p>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg">
+        <div class="sl-feature text-center">
+          <div class="feature-icon mx-auto" style="background:#fef3c7;color:#d97706;"><i class="fas fa-mobile-alt"></i></div>
+          <h6 class="fw-700 mb-1" style="font-family:var(--font-display);">5. Pay Deposit & Receive</h6>
+          <p class="small text-muted mb-0">Pay the refundable 10% deposit via M-Pesa and get disbursed.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOAN TABLE -->
+<section class="py-5" style="background:var(--sl-bg);">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <p class="text-uppercase small" style="color:var(--sl-gold);font-weight:700;letter-spacing:.1em;">Loan Options</p>
+        <h2 class="sl-section-title">Transparent Pricing</h2>
+        <div class="sl-divider"></div>
+        <p class="text-muted mb-4">No hidden charges. No surprise fees. Every amount, deposit, and term — right here before you apply.</p>
+        <a href="{% url 'core:requirements' %}" class="btn btn-sl-green">
+          <i class="fas fa-list-check me-2"></i>Full Requirements
+        </a>
+      </div>
+      <div class="col-lg-7">
+        <div class="sl-card p-0 overflow-hidden">
+          <table class="amount-table">
+            <thead>
+              <tr>
+                <th>Loan Amount</th>
+                <th>10% Deposit</th>
+                <th>Repayment</th>
+                <th>Term</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>KES 3,000</strong></td><td>KES 300</td><td>KES 3,000</td><td>30 days</td></tr>
+              <tr><td><strong>KES 5,000</strong></td><td>KES 500</td><td>KES 5,000</td><td>30 days</td></tr>
+              <tr><td><strong>KES 10,000</strong></td><td>KES 1,000</td><td>KES 10,000</td><td>30 days</td></tr>
+              <tr><td><strong>KES 20,000</strong></td><td>KES 2,000</td><td>KES 20,000</td><td>30 days</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5" style="background:var(--sl-green);">
+  <div class="container text-center text-white">
+    <h2 style="font-family:var(--font-display);font-size:2rem;font-weight:700;" class="mb-2">
+      Ready to Get Started?
+    </h2>
+    <p style="opacity:.8;" class="mb-4">Join thousands of Kenyans who trust SwiftLoan for fast financial relief.</p>
+    <a href="{% url 'accounts:register' %}" class="btn btn-sl-gold btn-lg px-5">
+      <i class="fas fa-bolt me-2"></i>Apply for a Loan Now
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// pass loan amounts to template context
+</script>
+{% endblock %}

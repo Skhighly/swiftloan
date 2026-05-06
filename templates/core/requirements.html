@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}Loan Requirements{% endblock %}
+
+{% block content %}
+<div class="sl-page-header">
+  <div class="container">
+    <h1><i class="fas fa-list-check me-2"></i>Loan Requirements</h1>
+    <p>Everything you need to qualify for a SwiftLoan — transparent and upfront.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- LEFT: Eligibility -->
+    <div class="col-lg-7">
+      <div class="sl-card mb-4">
+        <div class="sl-card-header d-flex align-items-center gap-2">
+          <div class="feature-icon" style="width:36px;height:36px;font-size:1rem;"><i class="fas fa-user-check"></i></div>
+          <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">Eligibility Criteria</h5>
+        </div>
+        <div class="loan-timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong>Kenyan Citizen or Resident</strong>
+            <p class="small text-muted mb-0">Must hold a valid National ID card.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong>Valid M-Pesa Account</strong>
+            <p class="small text-muted mb-0">Active Safaricom M-Pesa number registered in your name.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong>Valid KRA PIN</strong>
+            <p class="small text-muted mb-0">A valid Kenya Revenue Authority Personal Identification Number.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong>Employment / Income Source</strong>
+            <p class="small text-muted mb-0">Must have a verifiable job or income source. Your qualified amount depends on your monthly income.</p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot filled"><i class="fas fa-check"></i></div>
+            <strong>Age 18+</strong>
+            <p class="small text-muted mb-0">You must be at least 18 years of age to apply.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Application Steps -->
+      <div class="sl-card">
+        <div class="sl-card-header d-flex align-items-center gap-2">
+          <div class="feature-icon" style="width:36px;height:36px;font-size:1rem;background:#fef3c7;color:#d97706;"><i class="fas fa-route"></i></div>
+          <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">Application Process</h5>
+        </div>
+        <div class="req-step">
+          <div class="req-num">1</div>
+          <div>
+            <strong>Create Account</strong>
+            <p class="small text-muted mb-0">Register with your email address and set a password.</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">2</div>
+          <div>
+            <strong>Submit Personal Info</strong>
+            <p class="small text-muted mb-0">Provide your full legal name and phone number.</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">3</div>
+          <div>
+            <strong>Upload National ID</strong>
+            <p class="small text-muted mb-0">Photo of both the front and back of your National ID card (max 5MB each).</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">4</div>
+          <div>
+            <strong>Enter M-Pesa & KRA PIN</strong>
+            <p class="small text-muted mb-0">Your active Safaricom M-Pesa number and KRA PIN for identity verification.</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">5</div>
+          <div>
+            <strong>Job Details</strong>
+            <p class="small text-muted mb-0">Job title, employer name, and monthly income — used to determine your qualified amount.</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">6</div>
+          <div>
+            <strong>Select Loan Amount & Apply</strong>
+            <p class="small text-muted mb-0">Choose an amount up to your qualified limit and state your reason for applying.</p>
+          </div>
+        </div>
+        <div class="req-step">
+          <div class="req-num">7</div>
+          <div>
+            <strong>Wait for Approval (5 min)</strong>
+            <p class="small text-muted mb-0">Our system auto-reviews your application. You'll be notified via the Notifications tab.</p>
+          </div>
+        </div>
+        <div class="req-step" style="border-bottom:none;">
+          <div class="req-num" style="background:var(--sl-gold);color:var(--sl-dark);">8</div>
+          <div>
+            <strong>Pay Deposit via M-Pesa</strong>
+            <p class="small text-muted mb-0">Pay the refundable 10% deposit to unlock your loan. Funds are disbursed to your M-Pesa within 24 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Loan Tiers + FAQ -->
+    <div class="col-lg-5">
+      <div class="sl-card mb-4">
+        <div class="sl-card-header">
+          <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-layer-group me-2 text-success"></i>Qualification Tiers
+          </h5>
+          <p class="small text-muted mb-0 mt-1">Your qualified amount is based on monthly income.</p>
+        </div>
+        <table class="amount-table">
+          <thead>
+            <tr>
+              <th>Monthly Income</th>
+              <th>Max Loan</th>
+              <th>Deposit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Under KES 10,000</td>
+              <td><strong>KES 3,000</strong></td>
+              <td>KES 300</td>
+            </tr>
+            <tr>
+              <td>KES 10,000 – 24,999</td>
+              <td><strong>KES 5,000</strong></td>
+              <td>KES 500</td>
+            </tr>
+            <tr>
+              <td>KES 25,000 – 49,999</td>
+              <td><strong>KES 10,000</strong></td>
+              <td>KES 1,000</td>
+            </tr>
+            <tr>
+              <td>KES 50,000 and above</td>
+              <td><strong>KES 20,000</strong></td>
+              <td>KES 2,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sl-card mb-4">
+        <div class="sl-card-header">
+          <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+            <i class="fas fa-question-circle me-2" style="color:var(--sl-gold);"></i>FAQs
+          </h5>
+        </div>
+        <div class="accordion" id="faqAccordion">
+          <div class="accordion-item border-0 border-bottom">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed bg-transparent fw-600 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                Is the deposit really refundable?
+              </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                Yes. The 10% deposit is fully refunded once you repay your loan in full. It's a security measure, not a fee.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item border-0 border-bottom">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed bg-transparent fw-600 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                How long does approval take?
+              </button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                Your application is automatically reviewed within 5 minutes of submission. You'll receive a notification once done.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item border-0 border-bottom">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed bg-transparent fw-600 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                How is the loan disbursed?
+              </button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                Once your deposit is confirmed, our team manually reviews and disburses funds to your M-Pesa number within 24 hours.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item border-0">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed bg-transparent fw-600 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                How do I repay?
+              </button>
+            </h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body small text-muted">
+                You repay manually by sending the amount to our M-Pesa paybill/till number, then entering the transaction reference in the "Repay" section of your loan history.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="{% url 'accounts:register' %}" class="btn btn-sl-green w-100 py-3">
+          <i class="fas fa-rocket me-2"></i>I Qualify — Apply Now
+        </a>
+        <p class="small text-muted mt-2">Already have an account? <a href="{% url 'accounts:login' %}" class="text-success">Login here</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

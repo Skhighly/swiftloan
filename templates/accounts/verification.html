@@ -1,0 +1,45 @@
+{% extends 'accounts/onboarding_base.html' %}
+{% load widget_tweaks %}
+
+{% block step_title %}Verify M-Pesa & KRA PIN{% endblock %}
+{% block tip_text %}Your M-Pesa number is where your loan will be received. Your KRA PIN confirms your tax identity. Both are required for loan processing.{% endblock %}
+
+{% block form_content %}
+<div class="sl-card-header">
+  <h5 class="mb-0 fw-700" style="font-family:var(--font-display);">
+    <i class="fas fa-shield-check me-2 text-success"></i>Identity Verification
+  </h5>
+</div>
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="sl-form-label">
+      <i class="fas fa-mobile-alt me-1" style="color:#00a651;"></i>M-Pesa Number <span class="text-danger">*</span>
+    </label>
+    {% render_field form.mpesa_number class="sl-form-control" %}
+    <span class="small text-muted">Must be a registered Safaricom M-Pesa number. Format: 2547XXXXXXXX or 07XXXXXXXX</span>
+    {% if form.mpesa_number.errors %}<div class="form-error">{{ form.mpesa_number.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <div class="mb-4">
+    <label class="sl-form-label">
+      <i class="fas fa-fingerprint me-1" style="color:var(--sl-gold);"></i>KRA PIN <span class="text-danger">*</span>
+    </label>
+    {% render_field form.kra_pin class="sl-form-control" placeholder="e.g. A001234567X" %}
+    <span class="small text-muted">Your Kenya Revenue Authority Personal Identification Number.</span>
+    {% if form.kra_pin.errors %}<div class="form-error">{{ form.kra_pin.errors|join:", " }}</div>{% endif %}
+  </div>
+
+  <div class="p-3 rounded-2 mb-4" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+    <div class="d-flex gap-2">
+      <i class="fas fa-lock text-success mt-1"></i>
+      <span class="small text-muted">Your M-Pesa and KRA details are encrypted and never shared with third parties.</span>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-sl-green w-100 py-2">
+    Next: Employment Details <i class="fas fa-arrow-right ms-2"></i>
+  </button>
+</form>
+{% endblock %}
