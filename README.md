@@ -28,7 +28,7 @@ swiftloan/
 
 ### 1. Clone & Create Virtual Environment
 ```bash
-git clone <your-repo>
+git clone https://github.com/Skhighly/swiftloan.git
 cd swiftloan
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
