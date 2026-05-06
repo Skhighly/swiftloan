@@ -1,0 +1,11 @@
+.venv
+celerybeat*
+db.sqlite3
+media/
+.env
+
+logs/
+__pycache__/
+*.py[cod]
+*$py.class
+
